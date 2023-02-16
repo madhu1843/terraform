@@ -1,0 +1,40 @@
+
+    1  curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.9/2023-01-11/bin/linux/amd64/kubectl
+    2  chmod +x ./kubectl
+    3  sudo mv ./kubectl /usr/local/bin/kubectl
+    4  sudo apt update && sudo apt install docker.io -y
+    5  curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin
+    6  sudo apt install conntrack -y
+    7  git clone https://github.com/Mirantis/cri-dockerd.git
+    8  wget https://storage.googleapis.com/golang/getgo/installer_linux
+    9  chmod +x ./installer_linux
+   10  ./installer_linux
+   11  source ~/.bash_profile
+   12  cd cri-dockerd
+   13  mkdir bin
+   14  go get && go build -o bin/cri-dockerd
+   15  mkdir -p /usr/local/bin
+   16  install -o root -g root -m 0755 bin/cri-dockerd /usr/local/bin/cri-dockerd
+   17  cp -a packaging/systemd/* /etc/systemd/system
+   18  sed -i -e 's,/usr/bin/cri-dockerd,/usr/local/bin/cri-dockerd,' /etc/systemd/system/cri-docker.service
+   19  systemctl daemon-reload
+   20  systemctl enable cri-docker.service
+   21  systemctl enable --now cri-docker.socket
+   22  VERSION="v1.24.1" # check latest version in /releases page
+   23  curl -L https://github.com/kubernetes-sigs/cri-tools/releases/download/$VERSION/crictl-${VERSION}-linux-amd64.tar.gz --output crictl-${VERSION}-linux-amd64.tar.gz
+   24  sudo tar zxvf crictl-$VERSION-linux-amd64.tar.gz -C /usr/local/bin
+   25  rm -f crictl-$VERSION-linux-amd64.tar.gz
+   26  sudo cp /usr/local/bin/cri-dockerd /usr/bin/
+   27  systemctl status cri-docker
+   28  systemctl start cri-docker
+   29  systemctl status cri-docker
+   30  minikube start --vm-driver=none
+   31  kubectl get nodes
+   32  curl https://docs.projectcalico.org/manifests/calico-typha.yaml -o calico.yaml
+   33  kubectl apply -f calico.yaml
+   34  kubectl get nodes
+   35  kubectl get all
+   36  kubectl create deployment web --image=gcr.io/google-samples/hello-app:1.0
+   37  kubectl get all
+   38  kubectl expose deployment web --type=NodePort --port=8080
+   39  kubectl get all
