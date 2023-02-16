@@ -1,0 +1,155 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.0"
+    }
+  }
+}
+
+provider "aws" {
+  region     = "us-east-1"
+  access_key = "AKIATHMVEO7KXRTSZZMP"
+  secret_key = "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"
+}
+
+#creating vpc 
+
+resource "aws_vpc" "madhu-vpc" {
+  cidr_block = "10.0.0.0/16"
+
+  tags = {
+    Name = "madhu-vpc"
+  }
+}
+
+
+
+#creating internet gate way
+
+resource "aws_internet_gateway" "madhu-gateway" {
+  vpc_id = "vpc-0263e3d20446f8ac7"
+
+  tags = {
+    Name = "madhu-gateway"
+  }
+}
+
+
+
+#custom route table 
+
+resource "aws_route_table" "madhu-route-table" {
+  vpc_id = "vpc-0263e3d20446f8ac7"
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = "igw-09d63d675d17d7b96"
+  }
+ tags = {
+    Name = "madhu-route-table"
+  }
+}
+
+
+#creating the Subnet 
+
+resource "aws_subnet" "madhu-subnet" {
+  vpc_id     = "vpc-0263e3d20446f8ac7"
+  cidr_block = "10.0.1.0/24"     
+
+  tags = {
+    Name = "madhu-subnet"
+  }
+}
+
+
+
+#Associting the Subnet with the Route Table
+
+resource "aws_route_table_association" "madhu-srt" {
+  subnet_id      = "subnet-0e40ee44305730bc9"
+  route_table_id = "rtb-06e1a99f3d86e7241"
+}
+
+#creating new security group
+
+resource "aws_security_group" "madhu-sg" {
+  name_prefix = "madhu-sg"
+  vpc_id      = "vpc-0263e3d20446f8ac7"
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "madhu-sg"
+  }
+}
+
+
+#creating network_interface  
+
+resource "aws_network_interface" "madhu-network" {
+  subnet_id       = "subnet-0e40ee44305730bc9"
+  private_ips     = ["10.0.1.10"]
+  security_groups = ["sg-08cc6339e7258fa17"]
+
+  tags = {
+    Name = "madhu-network"
+  }
+}
+
+#creating elastic_ip
+
+resource "aws_eip" "madhu_eip" {
+  vpc = true
+}
+
+resource "aws_eip_association" "new_eip" {
+  network_interface_id = "eni-01403de186eecd47f"
+  allocation_id        = "eipalloc-0d305673f840dd180"
+}
+
+#creating aws instance
+
+resource "aws_instance" "madhu" {
+  ami           = "ami-0778521d914d23bc1"
+  instance_type = "t2.micro"
+  key_name = "kuber"
+  vpc_security_group_ids = ["sg-08cc6339e7258fa17"]
+  subnet_id = "subnet-0e40ee44305730bc9"
+  associate_public_ip_address = true
+
+  tags = {
+    Name = "madhu.tf"
+  }
+}
+
+
+
+
