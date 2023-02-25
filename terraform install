@@ -1,13 +1,13 @@
+ provider "aws" {
+  region     = "us-east-1"
+  access_key = "AKIATHMVEO7K5RZXHWWD"
+  secret_key = "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"
+  
 
 resource "aws_instance" "jenkins" {
   ami           = "ami-09cd747c78a9add63"
   instance_type = "t2.micro"
-  associate_public_ip_address = true
-  provider "aws" {
-  region     = "us-east-1"
-  access_key = "AKIATHMVEO7K5RZXHWWD"
-  secret_key = "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"
-
+ 
   tags = {
     Name = "jenkins"
   }
@@ -15,7 +15,6 @@ resource "aws_instance" "jenkins" {
 resource "aws_instance" "docker" {
   ami           = "ami-09cd747c78a9add63"
   instance_type = "t2.micro"
-  associate_public_ip_address = true
 
   tags = {
     Name = "docker"
