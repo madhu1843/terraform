@@ -9,26 +9,28 @@ terraform {
 
 provider "aws" {
   region     = "us-east-1"
-  access_key = ""
-  secret_key = ""
+  access_key = "AKIATHMVEO7KSSIMEYGY"
+  secret_key = "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"
 }
 
-resource "aws_instance" "demo" {
-  ami           = "ami-09cd747c78a9add63"
-  instance_type = "t2.medium"
+resource "aws_instance" "Monitoring" {
+  ami           = "ami-0caf778a172362f1c"
+  instance_type = "t2.micro"
   associate_public_ip_address = true
+  key_name = "kuber"
 
   tags = {
-    Name = "jenkins"
+    Name = "Monitoring"
   }
 }
 
-resource "aws_instance" "node" {
-  ami           = "ami-09cd747c78a9add63"
-  instance_type = "t2.micro"
+resource "aws_instance" "Jenkins" {
+  ami           = "ami-0caf778a172362f1c"
+  instance_type = "t2.medium"
   associate_public_ip_address = true
+  key_name = "kuber"
 
   tags = {
-    Name = "node"
+    Name = "Jenkins"
   }
 }
