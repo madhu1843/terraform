@@ -1,11 +1,4 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 4.0"
-    }
-  }
-}
+
 
 provider "aws" {
   region     = "us-east-1"
@@ -13,24 +6,29 @@ provider "aws" {
   secret_key = "3SNshPsQeCWEV1Qyhz0ksBYpgFtQL/xyweyFKEXl"
 }
 
-resource "aws_instance" "Monitoring" {
-  ami           = "ami-0caf778a172362f1c"
-  instance_type = "t2.micro"
-  associate_public_ip_address = true
-  key_name = "kuber"
-
-  tags = {
-    Name = "Monitoring"
-  }
-}
-
 resource "aws_instance" "Jenkins" {
-  ami           = "ami-0caf778a172362f1c"
-  instance_type = "t2.medium"
-  associate_public_ip_address = true
-  key_name = "kuber"
+   ami           = "ami-0557a15b87f6559cf"
+   instance_type = "t2.medium"
+   key_name      = "kuber"
+   vpc_security_group_ids = ["sg-029ebc8da8c4232ab"]
+   subnet_id = "subnet-03a18000ddcdc26d9"
+   availability_zone = "us-east-1d"
 
-  tags = {
-    Name = "Jenkins"
+
+   tags = {
+     name = "Jenkins"
   }
-}
+
+
+resource "aws_instance" "Grafana" {
+   ami           = "ami-0557a15b87f6559cf"
+   instance_type = "t2.micro"
+   key_name      = "kuber"
+   vpc_security_group_ids = ["sg-029ebc8da8c4232ab"]
+   subnet_id = "subnet-03a18000ddcdc26d9"
+   availability_zone = "us-east-1d"
+
+
+   tags = {
+     name = "Monitoring-Grafana"
+  }
